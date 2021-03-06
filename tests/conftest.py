@@ -18,11 +18,10 @@ def coins(interface):
         interface.ERC20('0x6B175474E89094C44Da98b954EedeAC495271d0F'),
         interface.ERC20('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
         interface.USDT('0xdAC17F958D2ee523a2206206994597C13D831ec7'),
-        interface.ERC20('0x0000000000085d4780B73119b644AE5ecd22b376'),
-        interface.ERC20('0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8'),
+        interface.ERC20('0x5282a4eF67D9C33135340fB3289cc1711c13638C'),
     ]
 
 
 @pytest.fixture(scope='module')
-def yusd(interface):
-    return interface.ERC20('0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c')
+def yvcrvIB(interface):
+    return interface.ERC20('0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c') # put deployed vault contract here when launched
