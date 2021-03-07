@@ -38,7 +38,7 @@ def test_recycle_exact(recycle, coins, uniswap, yvcrvIB, accounts):
     assert yvcrvIB.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_yvcrvIB']
 
 
-@pytest.mark.parametrize('coin', range(5)) # do I need to change this number to 3?
+@pytest.mark.parametrize('coin', range(3))
 def test_recycle_single_coin(recycle, coins, uniswap, yvcrvIB, accounts, coin):
     buy_coins_on_uniswap(uniswap, [coins[coin]], accounts[0])
     set_allowances([coins[coin]], accounts[0], recycle, True)
