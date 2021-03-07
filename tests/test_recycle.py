@@ -18,32 +18,32 @@ def set_allowances(coins, user, spender, unlimited=True):
 
 
 @pytest.mark.parametrize('unlimited', [True, False])
-def test_recycle(recycle, coins, uniswap, yusd, accounts, unlimited):
+def test_recycle(recycle, coins, uniswap, ybusd, accounts, unlimited):
     buy_coins_on_uniswap(uniswap, coins, accounts[0])
     set_allowances(coins, accounts[0], recycle, unlimited)
 
-    before = yusd.balanceOf(accounts[0])
+    before = ybusd.balanceOf(accounts[0])
     tx = recycle.recycle({'from': accounts[0]})
-    assert yusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_yusd']
+    assert ybusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_ybusd']
 
 
-def test_recycle_exact(recycle, coins, uniswap, yusd, accounts):
+def test_recycle_exact(recycle, coins, uniswap, ybusd, accounts):
     buy_coins_on_uniswap(uniswap, coins, accounts[0])
     set_allowances(coins, accounts[0], recycle, True)
 
-    before = yusd.balanceOf(accounts[0])
+    before = ybusd.balanceOf(accounts[0])
     balances = [coin.balanceOf(accounts[0]) for coin in coins]
     values = [10 ** coin.decimals() for coin in coins]
     tx = recycle.recycle_exact(*values, {'from': accounts[0]})
-    assert yusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_yusd']
+    assert ybusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_ybusd']
 
 
 @pytest.mark.parametrize('coin', range(5))
-def test_recycle_single_coin(recycle, coins, uniswap, yusd, accounts, coin):
+def test_recycle_single_coin(recycle, coins, uniswap, ybusd, accounts, coin):
     buy_coins_on_uniswap(uniswap, [coins[coin]], accounts[0])
     set_allowances([coins[coin]], accounts[0], recycle, True)
     print(coins[coin].symbol(), coins[coin].balanceOf(accounts[0]))
 
-    before = yusd.balanceOf(accounts[0])
+    before = ybusd.balanceOf(accounts[0])
     tx = recycle.recycle({'from': accounts[0]})
-    assert yusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_yusd']
+    assert ybusd.balanceOf(accounts[0]) - before == tx.events['Recycled']['received_ybusd']
