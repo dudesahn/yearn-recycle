@@ -1,4 +1,4 @@
-# @version 0.2.4
+# @version 0.2.11
 from vyper.interfaces import ERC20
 
 # Banteg's live contract can be found here: https://etherscan.io/address/0x5F07257145fDd889c6E318F99828E68A449A5c7A#code
@@ -8,7 +8,7 @@ interface USDT:
     def approve(_spender: address, _value: uint256): nonpayable
 
 interface crvIBdeposit:
-    def add_liquidity(uamounts: uint256[3], min_mint_amount: uint256, true): nonpayable
+    def add_liquidity(uamounts: uint256[3], min_mint_amount: uint256, use_underlying: bool): nonpayable
 
 interface yVault:
     def deposit(amount: uint256): nonpayable
@@ -23,7 +23,11 @@ event Recycled:
 
 ibdeposit: constant(address) = 0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF
 crvIB: constant(address) = 0x5282a4eF67D9C33135340fB3289cc1711c13638C
+<<<<<<< Updated upstream
 yvcrvIB: constant(address) = 0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c # change this to the yvcrvIB contract when deployed (this is yUSD)
+=======
+yvcrvIB: constant(address) = 0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8 # add real address once deployed, this one is yUSD
+>>>>>>> Stashed changes
 
 dai: constant(address) = 0x6B175474E89094C44Da98b954EedeAC495271d0F
 usdc: constant(address) = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
@@ -48,8 +52,9 @@ def recycle_exact_amounts(sender: address, _dai: uint256, _usdc: uint256, _usdt:
         USDT(usdt).transferFrom(sender, self, _usdt)
 
     deposit_amounts: uint256[3] = [_dai, _usdc, _usdt]
+    use_underlying: bool = True
     if _dai + _usdc + _usdt > 0:
-        crvIBdeposit(ibdeposit).add_liquidity(deposit_amounts, 0, true)
+        crvIBdeposit(ibdeposit).add_liquidity(deposit_amounts, 0, use_underlying)
 
     crvIB_balance: uint256 = ERC20(crvIB).balanceOf(self)       
     if crvIB_balance > 0:
