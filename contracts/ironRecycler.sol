@@ -55,9 +55,9 @@ contract ironRecycler {
     function ironRecycle()
         external {
         
-        uint256 daiBalance = dai.balanceOf(address(msg.sender));
-        uint256 usdcBalance = usdc.balanceOf(address(msg.sender));
-        uint256 usdtBalance = usdt.balanceOf(address(msg.sender));
+        uint256 daiBalance = dai.balanceOf(msg.sender);
+        uint256 usdcBalance = usdc.balanceOf(msg.sender);
+        uint256 usdtBalance = usdt.balanceOf(msg.sender);
 
         pool.add_liquidity([daiBalance, usdcBalance, usdcBalance], 0, true);
 
@@ -70,10 +70,11 @@ contract ironRecycler {
         want.safeTransfer(address(curveProxy), _toInvest);
         curveProxy.deposit(gauge, address(want));
 }
+
     function zapDai()
         external {
         
-        uint256 daiBalance = dai.balanceOf(address(msg.sender));
+        uint256 daiBalance = dai.balanceOf(msg.sender);
         require(daiBalance != 0, "0 DAI");
 
         pool.add_liquidity([daiBalance, 0, 0], 0, true);
@@ -91,7 +92,7 @@ contract ironRecycler {
     function zapUsdc()
         external {
         
-        uint256 usdcBalance = usdc.balanceOf(address(msg.sender));
+        uint256 usdcBalance = usdc.balanceOf(msg.sender);
         require(usdcBalance != 0, "0 USDC");
 
         pool.add_liquidity([0, usdcBalance, 0], 0, true);
@@ -109,7 +110,7 @@ contract ironRecycler {
     function zapUsdt()
         external {
         
-        uint256 usdtBalance = usdt.balanceOf(address(msg.sender));
+        uint256 usdtBalance = usdt.balanceOf(msg.sender);
         require(usdtBalance != 0, "0 USDT");
 
         pool.add_liquidity([usdtBalance, 0, 0], 0, true);
