@@ -23,7 +23,7 @@ event Recycled:
 
 ibdeposit: constant(address) = 0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF
 crvIB: constant(address) = 0x5282a4eF67D9C33135340fB3289cc1711c13638C
-yvcrvIB: constant(address) = add_here_when_deployed
+yvcrvIB: constant(address) = 0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c # change this to the yvcrvIB contract when deployed (this is yUSD)
 
 dai: constant(address) = 0x6B175474E89094C44Da98b954EedeAC495271d0F
 usdc: constant(address) = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
