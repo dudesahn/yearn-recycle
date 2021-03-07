@@ -37,7 +37,7 @@ def __init__():
     ERC20(usdc).approve(ydeposit, MAX_UINT256)
     USDT(usdt).approve(ydeposit, MAX_UINT256)
     ERC20(busd).approve(ydeposit, MAX_UINT256)
-    ERC20(ybcrv).approve(yusd, MAX_UINT256)
+    ERC20(ybcrv).approve(ybusd, MAX_UINT256)
 
 
 @internal
@@ -49,9 +49,9 @@ def recycle_exact_amounts(sender: address, _dai: uint256, _usdc: uint256, _usdt:
     if _usdt > 0:
         USDT(usdt).transferFrom(sender, self, _usdt)
     if _busd > 0:
-        ERC20(tusd).transferFrom(sender, self, _tusd)
+        ERC20(busd).transferFrom(sender, self, _busd)
     if _ybcrv > 0:
-        ERC20(ycrv).transferFrom(sender, self, _ycrv)
+        ERC20(ybcrv).transferFrom(sender, self, _ybcrv)
 
     deposit_amounts: uint256[4] = [_dai, _usdc, _usdt, _busd]
     if _dai + _usdc + _usdt + _busd > 0:
@@ -74,8 +74,8 @@ def recycle():
     _dai: uint256 = min(ERC20(dai).balanceOf(msg.sender), ERC20(dai).allowance(msg.sender, self))
     _usdc: uint256 = min(ERC20(usdc).balanceOf(msg.sender), ERC20(usdc).allowance(msg.sender, self))
     _usdt: uint256 = min(ERC20(usdt).balanceOf(msg.sender), ERC20(usdt).allowance(msg.sender, self))
-    _busd: uint256 = min(ERC20(tusd).balanceOf(msg.sender), ERC20(tusd).allowance(msg.sender, self))
-    _ybcrv: uint256 = min(ERC20(ycrv).balanceOf(msg.sender), ERC20(ycrv).allowance(msg.sender, self))
+    _busd: uint256 = min(ERC20(busd).balanceOf(msg.sender), ERC20(busd).allowance(msg.sender, self))
+    _ybcrv: uint256 = min(ERC20(ybcrv).balanceOf(msg.sender), ERC20(ybcrv).allowance(msg.sender, self))
 
     self.recycle_exact_amounts(msg.sender, _dai, _usdc, _usdt, _busd, _ybcrv)
 
