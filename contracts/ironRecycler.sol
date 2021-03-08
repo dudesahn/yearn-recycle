@@ -3,20 +3,18 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 // These are the core Yearn libraries
-import {BaseStrategy} from "@yearnvaults/contracts/BaseStrategy.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./interfaces/curve.sol";
-import "./interfaces/yearn.sol";
-import {IUniswapV2Router02} from "./interfaces/uniswap.sol";
+
 
 interface IYVault is IERC20 {
     function deposit(uint256 amount, address recipient) external;
-    function withdraw() external;
 }
 
 contract ironRecycler {
@@ -24,15 +22,7 @@ contract ironRecycler {
     using Address for address;
     using SafeMath for uint256;
 
-    address public constant gauge =
-        address(0xF5194c3325202F456c95c1Cf0cA36f8475C1949F); // Curve Iron Bank Gauge contract, v2 is tokenized, held by Yearn's voter
-    ICurveStrategyProxy public curveProxy =
-        ICurveStrategyProxy(
-            address(0x9a165622a744C20E3B2CB443AeD98110a33a231b)
-        ); // Yearn's Updated v3 StrategyProxy
-
-    ICurveFi public pool =
-        ICurveFi(address(0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF)); // Curve Iron Bank Pool
+    ICurveFi public pool = ICurveFi(address(0x2dded6Da1BF5DBdF597C45fcFaa3194e53EcfeAF)); // Curve Iron Bank Pool
     IYVault public yVault = IYVault(address()); // add address here when deployed
 
     IERC20 public want = IERC20(address(0x5282a4eF67D9C33135340fB3289cc1711c13638C)); // Iron Bank curve LP Token
@@ -59,16 +49,24 @@ contract ironRecycler {
         uint256 usdcBalance = usdc.balanceOf(msg.sender);
         uint256 usdtBalance = usdt.balanceOf(msg.sender);
 
+        dai.transferFrom(msg.sender, address(this), daiBalance);
+        usdc.transferFrom(msg.sender, address(this), usdcBalance);
+        usdt.transferFrom(msg.sender, address(this), usdtBalance);
+
+        uint256 daiBalanceBegin = dai.balanceOf(address(this));
+        require(daiBalanceBegin >= daiBalance, "NOT ALL DAI RECEIVED");
+        
+        uint256 usdcBalanceBegin = usdc.balanceOf(address(this));
+        require(usdcBalanceBegin >= usdcBalance, "NOT ALL USDC RECEIVED");
+        
+        uint256 usdtBalanceBegin = usdt.balanceOf(address(this));
+        require(usdtBalanceBegin >= usdtBalance, "NOT ALL USDT RECEIVED");
+
         pool.add_liquidity([daiBalance, usdcBalance, usdcBalance], 0, true);
 
         uint256 curvePoolTokens = want.balanceOf(address(this));
 
         yVault.deposit(curvePoolTokens, msg.sender);
-
-
-        uint256 _toInvest = want.balanceOf(address(this));
-        want.safeTransfer(address(curveProxy), _toInvest);
-        curveProxy.deposit(gauge, address(want));
 }
 
     function zapDai()
@@ -83,10 +81,6 @@ contract ironRecycler {
 
         yVault.deposit(curvePoolTokens, msg.sender);
 
-
-        uint256 _toInvest = want.balanceOf(address(this));
-        want.safeTransfer(address(curveProxy), _toInvest);
-        curveProxy.deposit(gauge, address(want));
 }
 
     function zapUsdc()
@@ -101,10 +95,6 @@ contract ironRecycler {
 
         yVault.deposit(curvePoolTokens, msg.sender);
 
-
-        uint256 _toInvest = want.balanceOf(address(this));
-        want.safeTransfer(address(curveProxy), _toInvest);
-        curveProxy.deposit(gauge, address(want));
 }
 
     function zapUsdt()
@@ -119,10 +109,6 @@ contract ironRecycler {
 
         yVault.deposit(curvePoolTokens, msg.sender);
 
-
-        uint256 _toInvest = want.balanceOf(address(this));
-        want.safeTransfer(address(curveProxy), _toInvest);
-        curveProxy.deposit(gauge, address(want));
 }
 
 }
