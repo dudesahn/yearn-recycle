@@ -3,11 +3,9 @@ pragma solidity 0.6.12;
 pragma experimental ABIEncoderV2;
 
 // These are the core Yearn libraries
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./interfaces/curve.sol";
@@ -62,7 +60,7 @@ contract ironRecycler {
         uint256 usdtBalanceBegin = usdt.balanceOf(address(this));
         require(usdtBalanceBegin >= usdtBalance, "NOT ALL USDT RECEIVED");
 
-        pool.add_liquidity([daiBalance, usdcBalance, usdcBalance], 0, true);
+        pool.add_liquidity([daiBalance, usdcBalance, usdtBalance], 0, true);
 
         uint256 curvePoolTokens = want.balanceOf(address(this));
 
@@ -74,7 +72,11 @@ contract ironRecycler {
         
         uint256 daiBalance = dai.balanceOf(msg.sender);
         require(daiBalance != 0, "0 DAI");
-
+        dai.transferFrom(msg.sender, address(this), daiBalance);
+        
+        uint256 daiBalanceBegin = dai.balanceOf(address(this));
+        require(daiBalanceBegin >= daiBalance, "NOT ALL DAI RECEIVED");
+        
         pool.add_liquidity([daiBalance, 0, 0], 0, true);
 
         uint256 curvePoolTokens = want.balanceOf(address(this));
@@ -88,6 +90,10 @@ contract ironRecycler {
         
         uint256 usdcBalance = usdc.balanceOf(msg.sender);
         require(usdcBalance != 0, "0 USDC");
+        usdc.transferFrom(msg.sender, address(this), usdcBalance);
+        
+        uint256 usdcBalanceBegin = usdc.balanceOf(address(this));
+        require(usdcBalanceBegin >= usdcBalance, "NOT ALL USDC RECEIVED");
 
         pool.add_liquidity([0, usdcBalance, 0], 0, true);
 
@@ -102,8 +108,12 @@ contract ironRecycler {
         
         uint256 usdtBalance = usdt.balanceOf(msg.sender);
         require(usdtBalance != 0, "0 USDT");
-
-        pool.add_liquidity([usdtBalance, 0, 0], 0, true);
+        usdt.transferFrom(msg.sender, address(this), usdtBalance);
+        
+        uint256 usdtBalanceBegin = usdt.balanceOf(address(this));
+        require(usdtBalanceBegin >= usdtBalance, "NOT ALL USDT RECEIVED");
+        
+        pool.add_liquidity([0, 0, usdtBalance], 0, true);
 
         uint256 curvePoolTokens = want.balanceOf(address(this));
 
